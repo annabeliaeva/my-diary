@@ -13,11 +13,13 @@ import { useState } from 'react'
 function App() {
   const INITIAL_DATA = [
     {
+      id: 1,
       title: 'Хороший денек',
       text: 'Прекрасный выдался день для прогулки',
       date: new Date()
     },
     {
+      id: 2,
       title: 'Плохой денек',
       text: 'Ужасный выдался день для прогулки',
       date: new Date()
@@ -30,6 +32,7 @@ function App() {
     setItems((items) => [
       ...items,
       {
+        id: Math.max(items.map((i) => i.id)) + 1,
         title: item.header,
         text: item.post,
         date: new Date(item.date)
@@ -44,7 +47,7 @@ function App() {
         <JournalAddButton />
         <JournalList>
           {items.map((e) => (
-            <CardButton key={e.title + e.text}>
+            <CardButton key={e.id}>
               <JournalItem title={e.title} text={e.text} date={e.date} />
             </CardButton>
           ))}
