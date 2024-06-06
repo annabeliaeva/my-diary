@@ -38,7 +38,6 @@ function App() {
         date: new Date(item.date)
       }
     ])
-    console.log(items)
   }
 
   return (
