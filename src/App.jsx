@@ -11,33 +11,34 @@ import JournalForm from './components/JournalForm/JournalForm'
 import { useState } from 'react'
 
 function App() {
-  const INITIAL_DATA = [
-    {
-      id: 1,
-      title: 'Хороший денек',
-      text: 'Прекрасный выдался день для прогулки',
-      date: new Date()
-    },
-    {
-      id: 2,
-      title: 'Плохой денек',
-      text: 'Ужасный выдался день для прогулки',
-      date: new Date()
-    }
-  ]
+  // const INITIAL_DATA = [
+  //   {
+  //     id: 1,
+  //     title: 'Хороший денек',
+  //     text: 'Прекрасный выдался день для прогулки',
+  //     date: new Date()
+  //   },
+  //   {
+  //     id: 2,
+  //     title: 'Плохой денек',
+  //     text: 'Ужасный выдался день для прогулки',
+  //     date: new Date()
+  //   }
+  // ]
 
-  const [items, setItems] = useState(INITIAL_DATA)
+  const [items, setItems] = useState([])
 
   const addItem = (item) => {
-    setItems((items) => [
+    setItems((oldItems) => [
       ...items,
       {
-        id: Math.max(items.map((i) => i.id)) + 1,
+        id: oldItems.length > 0 ? Math.max(...items.map((i) => i.id)) + 1 : 1,
         title: item.header,
         text: item.post,
         date: new Date(item.date)
       }
     ])
+    console.log(items)
   }
 
   return (
@@ -45,13 +46,7 @@ function App() {
       <LeftPanel>
         <Header />
         <JournalAddButton />
-        <JournalList>
-          {items.map((e) => (
-            <CardButton key={e.id}>
-              <JournalItem title={e.title} text={e.text} date={e.date} />
-            </CardButton>
-          ))}
-        </JournalList>
+        <JournalList items={items} />
       </LeftPanel>
       <Body>
         <JournalForm onSubmit={addItem} />
