@@ -8,7 +8,7 @@ import LeftPanel from './layouts/LeftPanel/LeftPanel'
 import Header from './components/Header/Header'
 import JournalAddButton from './components/JournalAddButton/JournalAddButton'
 import JournalForm from './components/JournalForm/JournalForm'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 function App() {
   // const INITIAL_DATA = [
@@ -28,9 +28,27 @@ function App() {
 
   const [items, setItems] = useState([])
 
+  useEffect(() => {
+    const data = JSON.parse(localStorage.getItem('data'))
+    if (data) {
+      setItems(
+        data.map((item) => ({
+          ...item,
+          date: new Date(item.date)
+        }))
+      )
+    }
+  }, [])
+
+  useEffect(() => {
+    if (items.length) {
+      localStorage.setItem('data', JSON.stringify(items))
+    }
+  }, [items])
+
   const addItem = (item) => {
     setItems((oldItems) => [
-      ...items,
+      ...oldItems,
       {
         id: oldItems.length > 0 ? Math.max(...items.map((i) => i.id)) + 1 : 1,
         title: item.header,
