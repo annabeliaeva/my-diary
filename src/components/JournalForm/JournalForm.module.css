@@ -3,17 +3,6 @@
   flex-direction: column;
 }
 
-.header {
-  background: none;
-  border: none;
-  height: 40px;
-  font-weight: 600;
-  font-size: 32px;
-  margin-bottom: 30px;
-  border-bottom: 1px solid #323232;
-  width: 100%;
-}
-
 .form_label {
   display: flex;
   align-items: center;
@@ -34,6 +23,7 @@
   font-weight: 600;
   width: 100%;
 }
+
 .post {
   font-weight: 400;
   font-size: 16px;

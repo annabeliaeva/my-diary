@@ -1,0 +1,18 @@
+.input {
+  border: none;
+  background: none;
+  font-size: 14px;
+  font-weight: 600;
+  width: 100%;
+}
+
+.input_header {
+  height: 40px;
+  font-size: 32px;
+  border-bottom: 1px solid #323232;
+}
+
+.invalid {
+  border: 1px solid red;
+  background: rgb(68, 6, 6);
+}
