@@ -41,22 +41,38 @@ function JournalForm({ onSubmit }) {
       <input
         type="text"
         name="header"
-        className={cn(style.input, {
+        className={cn(style.input, style.header, {
           [style.invalid]: !isFormValid.header
         })}
       />
-      <input
-        type="date"
-        name="date"
-        className={`input ${isFormValid.date ? '' : style.invalid}`}
-      />
-      <input type="text" name="tag" />
+      <div className={style.form_row}>
+        <label htmlFor="date" className={style.form_label}>
+          <img src="/date.svg" alt="date" />
+          <p>Дата</p>
+        </label>
+        <input
+          type="date"
+          id="date"
+          name="date"
+          className={cn(style.input, style.input, {
+            [style.invalid]: !isFormValid.date
+          })}
+        />
+      </div>
+      <div className={style.form_row}>
+        <label htmlFor="tag" className={style.form_label}>
+          <img src="/tag.svg" alt="tag" />
+          <p>Метки</p>
+        </label>
+        <input type="text" id="tag" className={style.input} name="tag" />
+      </div>
       <textarea
         name="post"
-        id=""
         cols="30"
         rows="10"
-        className={` ${isFormValid.post ? '' : style.invalid}`}
+        className={cn(style.input, style.post, {
+          [style.invalid]: !isFormValid.post
+        })}
       ></textarea>
       <Button text="Сохранить" />
     </form>
