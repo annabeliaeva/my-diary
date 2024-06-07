@@ -5,9 +5,10 @@ export const INITIAL_STATE = {
 		post: true
 	},
 	values: {
-		header: undefined,
-		date: undefined,
-		post: undefined
+		header: '',
+		date: '',
+		post: '',
+		tag: ''
 	},
 	isFormReadyToSubmut: false
 }
@@ -17,11 +18,11 @@ export function formReducer(state, action) {
 		case 'RESET_VALIDITY':
 			return { ...state, isFormValid: INITIAL_STATE.isFormValid }
 		case 'SUBMIT': {
-			const headerValidity = action.payload.header.trim().length
-			const postValidity = action.payload.post.trim().length
-			const dateValidity = action.payload.date
+			const headerValidity = state.values.header.trim().length
+			const postValidity = state.values.post.trim().length
+			const dateValidity = state.values.date
 			return {
-				values: action.payload,
+				...state,
 				isFormValid: {
 					header: headerValidity,
 					date: dateValidity,
@@ -30,6 +31,18 @@ export function formReducer(state, action) {
 				isFormReadyToSubmut: headerValidity && postValidity && dateValidity
 			}
 		}
+		case 'SET_FIELD':
+			return {
+				...state, values: {
+					...state.values,
+					[action.field]: action.value,
+				}
+			}
+		case 'CLEAR_FIELD':
+			return {
+				...state, values: INITIAL_STATE.values,
+				isFormReadyToSubmut: false
+			}
 	}
 
 }
