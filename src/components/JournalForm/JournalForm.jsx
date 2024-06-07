@@ -1,22 +1,24 @@
 import Button from '../Button/Button'
-import { isValidElement, useEffect, useState } from 'react'
+import { useEffect, useReducer, useState } from 'react'
 import style from './JournalForm.module.css'
 import cn from 'classnames'
+import { INITIAL_STATE, formReducer } from './JournalForm.state'
 
-const INITIAL_FORM_STATE = {
-  header: true,
-  date: true,
-  post: true
-}
+// const INITIAL_FORM_STATE = {
+//   header: true,
+//   date: true,
+//   post: true
+// }
 
 function JournalForm({ onSubmit }) {
-  const [isFormValid, setIsFormValid] = useState(INITIAL_FORM_STATE)
+  const [formState, dispatchForm] = useReducer(formReducer, INITIAL_STATE)
+  const { isFormValid, values, isFormReadyToSubmut } = formState
 
   useEffect(() => {
     let timeoutId
     if (!isFormValid.date || !isFormValid.header || !isFormValid.post) {
       timeoutId = setTimeout(() => {
-        setIsFormValid(INITIAL_FORM_STATE)
+        dispatchForm({ type: 'RESET_VALIDITY' })
       }, 2000)
     }
     return () => {
@@ -24,31 +26,15 @@ function JournalForm({ onSubmit }) {
     }
   }, [isFormValid])
 
+  useEffect(() => {
+    if (isFormReadyToSubmut) onSubmit(values)
+  }, [isFormReadyToSubmut])
+
   const addJournalItem = (e) => {
-    let isValid = true
     e.preventDefault()
     const formData = new FormData(e.target)
     const formProps = Object.fromEntries(formData)
-    if (!formProps.header.trim().length) {
-      setIsFormValid((prev) => ({ ...prev, header: false }))
-      isValid = false
-    } else {
-      setIsFormValid((prev) => ({ ...prev, header: true }))
-    }
-    if (!formProps.post.trim().length) {
-      setIsFormValid((prev) => ({ ...prev, post: false }))
-      isValid = false
-    } else {
-      setIsFormValid((prev) => ({ ...prev, post: true }))
-    }
-    if (!formProps.date) {
-      setIsFormValid((prev) => ({ ...prev, date: false }))
-      isValid = false
-    } else {
-      setIsFormValid((prev) => ({ ...prev, date: true }))
-    }
-    if (!isValid) return
-    onSubmit(formProps)
+    dispatchForm({ type: 'SUBMIT', payload: formProps })
   }
 
   return (
