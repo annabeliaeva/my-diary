@@ -4,7 +4,7 @@ import JournalItem from '../JournalItem/JournalItem'
 import { useContext } from 'react'
 import { UserContext } from '../../context/user.context'
 
-function JournalList({ items }) {
+function JournalList({ items, handleClickCardButton }) {
   if (items.length === 0) {
     return <p>Записей пока нет, добавьте первую</p>
   }
@@ -24,7 +24,7 @@ function JournalList({ items }) {
         .sort(sortItems)
         .filter((el) => el.userId === userId)
         .map((el) => (
-          <CardButton key={el.id}>
+          <CardButton key={el.id} onClick={() => handleClickCardButton(el)}>
             <JournalItem title={el.title} post={el.post} date={el.date} />
           </CardButton>
         ))}

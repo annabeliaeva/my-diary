@@ -7,9 +7,12 @@ import JournalAddButton from './components/JournalAddButton/JournalAddButton'
 import JournalForm from './components/JournalForm/JournalForm'
 import { useLocalStorage } from './hooks/useLocalStorage.hook'
 import { UserContextProvider } from './context/user.context'
+import { useState } from 'react'
 
 function App() {
   const [items, setItems] = useLocalStorage('data')
+
+  const [chosenCard, setChosenCard] = useState(null)
 
   const mapItems = (items) => {
     if (!items) return []
@@ -20,7 +23,6 @@ function App() {
   }
 
   const addItem = (item) => {
-    console.log(item)
     setItems([
       ...mapItems(items),
       {
@@ -31,16 +33,27 @@ function App() {
     ])
   }
 
+  const handleClickCardButton = (el) => {
+    setChosenCard(el)
+  }
+
+  const handleJournalAddButton = () => {
+    setChosenCard(null)
+  }
+
   return (
     <UserContextProvider>
       <div className="app">
         <LeftPanel>
           <Header />
-          <JournalAddButton />
-          <JournalList items={mapItems(items)} />
+          <JournalAddButton onClickJournalAddButton={handleJournalAddButton} />
+          <JournalList
+            items={mapItems(items)}
+            handleClickCardButton={handleClickCardButton}
+          />
         </LeftPanel>
         <Body>
-          <JournalForm onSubmit={addItem} />
+          <JournalForm onSubmit={addItem} item={chosenCard} />
         </Body>
       </div>
     </UserContextProvider>

@@ -38,6 +38,16 @@ export function formReducer(state, action) {
 					[action.field]: action.value,
 				}
 			}
+		case 'UPDATE_FORM':
+			return {
+				...state, values: {
+					...state.values,
+					title: action.title,
+					date: action.date,
+					post: action.post,
+					tag: action.tag
+				}
+			}
 		case 'CLEAR_FIELD':
 			return {
 				...state, values: INITIAL_STATE.values,

@@ -5,8 +5,9 @@ import cn from 'classnames'
 import { INITIAL_STATE, formReducer } from './JournalForm.state'
 import Input from '../Input/Input'
 import { UserContext } from '../../context/user.context'
+import { getFormattedDate } from '../../../utils'
 
-function JournalForm({ onSubmit }) {
+function JournalForm({ onSubmit, item }) {
   const [formState, dispatchForm] = useReducer(formReducer, INITIAL_STATE)
   const { isFormValid, values, isFormReadyToSubmut } = formState
 
@@ -56,6 +57,20 @@ function JournalForm({ onSubmit }) {
       value: userId
     })
   }, [userId])
+
+  useEffect(() => {
+    if (item) {
+      dispatchForm({
+        type: 'UPDATE_FORM',
+        title: item.title,
+        date: getFormattedDate(item.date),
+        post: item.post,
+        tag: item.tag
+      })
+    } else {
+      dispatchForm({ type: 'CLEAR_FIELD' })
+    }
+  }, [item])
 
   const addJournalItem = (e) => {
     e.preventDefault()
