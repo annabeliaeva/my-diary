@@ -1,56 +1,31 @@
 import './App.css'
-import Button from './components/Button/Button'
-import CardButton from './components/CardButton/CardButton'
-import JournalItem from './components/JournalItem/JournalItem'
 import JournalList from './components/JournalList/JournalList'
 import Body from './layouts/Body/Body'
 import LeftPanel from './layouts/LeftPanel/LeftPanel'
 import Header from './components/Header/Header'
 import JournalAddButton from './components/JournalAddButton/JournalAddButton'
 import JournalForm from './components/JournalForm/JournalForm'
-import { useEffect, useState } from 'react'
+import { useLocalStorage } from './hooks/useLocalStorage.hook'
+import { UserContext } from './context/user.context'
+import { useState } from 'react'
 
 function App() {
-  // const INITIAL_DATA = [
-  //   {
-  //     id: 1,
-  //     title: 'Хороший денек',
-  //     text: 'Прекрасный выдался день для прогулки',
-  //     date: new Date()
-  //   },
-  //   {
-  //     id: 2,
-  //     title: 'Плохой денек',
-  //     text: 'Ужасный выдался день для прогулки',
-  //     date: new Date()
-  //   }
-  // ]
+  const [items, setItems] = useLocalStorage('data')
+  const [userId, setUserId] = useState(1)
 
-  const [items, setItems] = useState([])
-
-  useEffect(() => {
-    const data = JSON.parse(localStorage.getItem('data'))
-    if (data) {
-      setItems(
-        data.map((item) => ({
-          ...item,
-          date: new Date(item.date)
-        }))
-      )
-    }
-  }, [])
-
-  useEffect(() => {
-    if (items.length) {
-      localStorage.setItem('data', JSON.stringify(items))
-    }
-  }, [items])
+  const mapItems = (items) => {
+    if (!items) return []
+    return items.map((i) => ({
+      ...i,
+      date: new Date(i.date)
+    }))
+  }
 
   const addItem = (item) => {
-    setItems((oldItems) => [
-      ...oldItems,
+    setItems([
+      ...mapItems(items),
       {
-        id: oldItems.length > 0 ? Math.max(...items.map((i) => i.id)) + 1 : 1,
+        id: items.length > 0 ? Math.max(...items.map((i) => i.id)) + 1 : 1,
         title: item.header,
         text: item.post,
         date: new Date(item.date)
@@ -59,16 +34,18 @@ function App() {
   }
 
   return (
-    <div className="app">
-      <LeftPanel>
-        <Header />
-        <JournalAddButton />
-        <JournalList items={items} />
-      </LeftPanel>
-      <Body>
-        <JournalForm onSubmit={addItem} />
-      </Body>
-    </div>
+    <UserContext.Provider value={{ userId, setUserId }}>
+      <div className="app">
+        <LeftPanel>
+          <Header />
+          <JournalAddButton />
+          <JournalList items={mapItems(items)} />
+        </LeftPanel>
+        <Body>
+          <JournalForm onSubmit={addItem} />
+        </Body>
+      </div>
+    </UserContext.Provider>
   )
 }
 
