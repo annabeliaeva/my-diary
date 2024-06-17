@@ -1,22 +1,25 @@
 import Button from '../Button/Button'
-import { useEffect, useReducer, useRef, useState } from 'react'
+import { useContext, useEffect, useReducer, useRef, useState } from 'react'
 import style from './JournalForm.module.css'
 import cn from 'classnames'
 import { INITIAL_STATE, formReducer } from './JournalForm.state'
 import Input from '../Input/Input'
+import { UserContext } from '../../context/user.context'
 
 function JournalForm({ onSubmit }) {
   const [formState, dispatchForm] = useReducer(formReducer, INITIAL_STATE)
   const { isFormValid, values, isFormReadyToSubmut } = formState
 
-  const headerRef = useRef()
+  const { userId } = useContext(UserContext)
+
+  const titleRef = useRef()
   const dateRef = useRef()
   const postRef = useRef()
 
   const focusError = (isFormValid) => {
     switch (true) {
-      case !isFormValid.header:
-        headerRef.current.focus()
+      case !isFormValid.title:
+        titleRef.current.focus()
         break
       case !isFormValid.date:
         dateRef.current.focus()
@@ -29,7 +32,7 @@ function JournalForm({ onSubmit }) {
   useEffect(() => {
     let timeoutId
     focusError(isFormValid)
-    if (!isFormValid.date || !isFormValid.header || !isFormValid.post) {
+    if (!isFormValid.date || !isFormValid.title || !isFormValid.post) {
       timeoutId = setTimeout(() => {
         dispatchForm({ type: 'RESET_VALIDITY' })
       }, 2000)
@@ -45,6 +48,14 @@ function JournalForm({ onSubmit }) {
       dispatchForm({ type: 'CLEAR_FIELD' })
     }
   }, [isFormReadyToSubmut, values, onSubmit])
+
+  useEffect(() => {
+    dispatchForm({
+      type: 'SET_FIELD',
+      field: 'userId',
+      value: userId
+    })
+  }, [userId])
 
   const addJournalItem = (e) => {
     e.preventDefault()
@@ -63,12 +74,12 @@ function JournalForm({ onSubmit }) {
     <form className={style.journal_form} onSubmit={addJournalItem}>
       <Input
         type="text"
-        name="header"
-        ref={headerRef}
-        value={values.header}
+        name="title"
+        ref={titleRef}
+        value={values.title}
         onChange={handleChange}
         appearance="header"
-        isValid={isFormValid.header}
+        isValid={isFormValid.title}
       />
       <div className={style.form_row}>
         <label htmlFor="date" className={style.form_label}>

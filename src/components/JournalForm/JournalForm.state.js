@@ -1,11 +1,11 @@
 export const INITIAL_STATE = {
 	isFormValid: {
-		header: true,
+		title: true,
 		date: true,
 		post: true
 	},
 	values: {
-		header: '',
+		title: '',
 		date: '',
 		post: '',
 		tag: ''
@@ -18,13 +18,13 @@ export function formReducer(state, action) {
 		case 'RESET_VALIDITY':
 			return { ...state, isFormValid: INITIAL_STATE.isFormValid }
 		case 'SUBMIT': {
-			const headerValidity = state.values.header.trim().length
+			const headerValidity = state.values.title.trim().length
 			const postValidity = state.values.post.trim().length
 			const dateValidity = state.values.date
 			return {
 				...state,
 				isFormValid: {
-					header: headerValidity,
+					title: headerValidity,
 					date: dateValidity,
 					post: postValidity
 				},
