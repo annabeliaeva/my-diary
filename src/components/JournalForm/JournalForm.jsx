@@ -5,9 +5,8 @@ import cn from 'classnames'
 import { INITIAL_STATE, formReducer } from './JournalForm.state'
 import Input from '../Input/Input'
 import { UserContext } from '../../context/user.context'
-import { getFormattedDate } from '../../../utils'
 
-function JournalForm({ onSubmit, item }) {
+function JournalForm({ onSubmit, onClickDelete, data }) {
   const [formState, dispatchForm] = useReducer(formReducer, INITIAL_STATE)
   const { isFormValid, values, isFormReadyToSubmut } = formState
 
@@ -45,32 +44,25 @@ function JournalForm({ onSubmit, item }) {
 
   useEffect(() => {
     if (isFormReadyToSubmut) {
+      console.log(formState)
       onSubmit(values)
       dispatchForm({ type: 'CLEAR_FIELD' })
+      dispatchForm({ type: 'SET_FIELD', payload: { userId } })
     }
-  }, [isFormReadyToSubmut, values, onSubmit])
+  }, [isFormReadyToSubmut, values, onSubmit, userId])
 
   useEffect(() => {
-    dispatchForm({
-      type: 'SET_FIELD',
-      field: 'userId',
-      value: userId
-    })
+    dispatchForm({ type: 'CLEAR_FIELD' })
+    dispatchForm({ type: 'SET_FIELD', payload: { userId } })
   }, [userId])
 
   useEffect(() => {
-    if (item) {
-      dispatchForm({
-        type: 'UPDATE_FORM',
-        title: item.title,
-        date: getFormattedDate(item.date),
-        post: item.post,
-        tag: item.tag
-      })
-    } else {
+    if (!data) {
       dispatchForm({ type: 'CLEAR_FIELD' })
+      dispatchForm({ type: 'SET_FIELD', payload: { userId } })
     }
-  }, [item])
+    dispatchForm({ type: 'SET_FIELD', payload: { ...data } })
+  }, [data])
 
   const addJournalItem = (e) => {
     e.preventDefault()
@@ -80,22 +72,37 @@ function JournalForm({ onSubmit, item }) {
   const handleChange = (e) => {
     dispatchForm({
       type: 'SET_FIELD',
-      field: e.target.name,
-      value: e.target.value
+      payload: { [e.target.name]: e.target.value }
     })
+  }
+
+  const deleteJournalItem = () => {
+    onClickDelete(data.id)
+    dispatchForm({ type: 'CLEAR_FIELD' })
+    dispatchForm({ type: 'SET_FIELD', payload: { userId } })
   }
 
   return (
     <form className={style.journal_form} onSubmit={addJournalItem}>
-      <Input
-        type="text"
-        name="title"
-        ref={titleRef}
-        value={values.title}
-        onChange={handleChange}
-        appearance="header"
-        isValid={isFormValid.title}
-      />
+      <div className={style.header}>
+        <Input
+          type="text"
+          name="title"
+          ref={titleRef}
+          value={values.title}
+          onChange={handleChange}
+          appearance="header"
+          isValid={isFormValid.title}
+        />
+        {data?.id && (
+          <img
+            className={style.img_delete}
+            src="/delete.svg"
+            alt="Удалить запись"
+            onClick={deleteJournalItem}
+          />
+        )}
+      </div>
       <div className={style.form_row}>
         <label htmlFor="date" className={style.form_label}>
           <img src="/date.svg" alt="date" />
@@ -106,7 +113,9 @@ function JournalForm({ onSubmit, item }) {
           id="date"
           name="date"
           ref={dateRef}
-          value={values.date}
+          value={
+            values.date ? new Date(values.date).toISOString().slice(0, 10) : ''
+          }
           onChange={handleChange}
           isValid={isFormValid.date}
         />
